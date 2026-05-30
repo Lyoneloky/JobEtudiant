@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import FavoriteButton from './FavoriteButton'
+import Image from 'next/image'
 import { Leaf, AlertTriangle, ArrowLeft, Clock, Pill, Stethoscope, BookOpen, FlaskConical, Activity } from 'lucide-react'
 
 const C = { primary: '#22c55e', dark: '#166534', light: '#dcfce7', beige: '#F1EFE6', text: '#616161', border: '#E8EDE4', white: '#FFFFFF', bg: '#F8FAF5' }
@@ -56,19 +57,30 @@ export default async function PlantDetailPage({ params }: { params: Promise<{ id
 
         {/* Header */}
         <div style={{ background: C.white, borderRadius: 28, border: `1px solid ${C.border}`, overflow: 'hidden', marginBottom: 24, boxShadow: '0 8px 32px rgba(22,101,52,0.08)' }}>
-          {/* Bannière verte */}
-          <div style={{ background: `linear-gradient(135deg, ${C.dark}, #1a7a40)`, padding: '36px 40px', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', right: -40, top: -40, width: 200, height: 200, background: 'rgba(255,255,255,0.05)', borderRadius: '50%' }} />
-            <div style={{ position: 'absolute', right: 40, bottom: -60, width: 150, height: 150, background: 'rgba(255,255,255,0.04)', borderRadius: '50%' }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, position: 'relative', zIndex: 1 }}>
+          {/* Bannière : photo réelle ou dégradé vert */}
+          <div style={{ position: 'relative', minHeight: 220, background: `linear-gradient(135deg, ${C.dark}, #1a7a40)`, overflow: 'hidden' }}>
+            {plant.image_url && (
+              <Image
+                src={plant.image_url}
+                alt={plant.name}
+                fill
+                sizes="(max-width:768px) 100vw, 900px"
+                style={{ objectFit:'cover', opacity:0.35 }}
+                unoptimized
+                priority
+              />
+            )}
+            {/* Overlay gradient pour lisibilité du texte */}
+            <div style={{ position:'absolute', inset:0, background:'linear-gradient(to right, rgba(22,101,52,0.85) 40%, rgba(22,101,52,0.4))', zIndex:1 }}/>
+            <div style={{ position:'relative', zIndex:2, padding:'36px 40px', display:'flex', justifyContent:'space-between', alignItems:'flex-start', flexWrap:'wrap', gap:16 }}>
               <div>
                 {plant.categories && (
-                  <span style={{ display: 'inline-block', background: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.9)', fontSize: 12, fontWeight: 600, padding: '4px 12px', borderRadius: 999, marginBottom: 12 }}>
+                  <span style={{ display:'inline-block', background:'rgba(255,255,255,0.2)', color:'rgba(255,255,255,0.95)', fontSize:12, fontWeight:600, padding:'4px 12px', borderRadius:999, marginBottom:12 }}>
                     {(plant.categories as { name: string }).name}
                   </span>
                 )}
-                <h1 style={{ fontSize: 40, fontWeight: 800, color: C.white, margin: 0, fontFamily: "'Poppins', sans-serif", lineHeight: 1.2 }}>{plant.name}</h1>
-                {plant.latin_name && <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.75)', fontStyle: 'italic', marginTop: 8, margin: '8px 0 0' }}>{plant.latin_name}</p>}
+                <h1 style={{ fontSize:38, fontWeight:800, color:C.white, margin:0, fontFamily:"'Poppins',sans-serif", lineHeight:1.2 }}>{plant.name}</h1>
+                {plant.latin_name && <p style={{ fontSize:17, color:'rgba(255,255,255,0.8)', fontStyle:'italic', margin:'8px 0 0' }}>{plant.latin_name}</p>}
               </div>
               <FavoriteButton plantId={plant.id} initialFavorite={isFavorite} isLoggedIn={!!user} />
             </div>

@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import Image from 'next/image'
 import { AlertTriangle } from 'lucide-react'
 import type { Plant } from '@/lib/types'
 
@@ -11,47 +14,51 @@ function getEmoji(name: string) {
   const k = Object.keys(PLANT_EMOJI).find(k => name.includes(k))
   return k ? PLANT_EMOJI[k] : '🌿'
 }
-
 function getColor(name: string) {
-  const idx = name.charCodeAt(0) % PLANT_COLORS.length
-  return PLANT_COLORS[idx]
+  return PLANT_COLORS[name.charCodeAt(0) % PLANT_COLORS.length]
 }
 
-interface PlantCardProps { plant: Plant }
-
-export default function PlantCard({ plant }: PlantCardProps) {
+export default function PlantCard({ plant }: { plant: Plant }) {
   return (
     <Link href={`/plantes/${plant.id}`} style={{ textDecoration:'none', display:'block' }}>
-      <div style={{ background:C.white, borderRadius:20, border:`1px solid ${C.border}`, overflow:'hidden', transition:'box-shadow .2s, border-color .2s', cursor:'pointer' }}
-        onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow='0 8px 28px rgba(22,101,52,0.12)'; (e.currentTarget as HTMLDivElement).style.borderColor='#bbf7d0' }}
+      <div
+        style={{ background:C.white, borderRadius:20, border:`1px solid ${C.border}`, overflow:'hidden', cursor:'pointer', transition:'box-shadow .2s, border-color .2s' }}
+        onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.cssText += ';box-shadow:0 8px 28px rgba(22,101,52,0.12);border-color:#bbf7d0' }}
         onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow='none'; (e.currentTarget as HTMLDivElement).style.borderColor=C.border }}
       >
-        {/* Image / Emoji zone */}
-        <div style={{ height:160, background:plant.image_url ? 'transparent' : getColor(plant.name), display:'flex', alignItems:'center', justifyContent:'center', position:'relative', overflow:'hidden' }}>
+        {/* Zone image */}
+        <div style={{ height:180, background:getColor(plant.name), display:'flex', alignItems:'center', justifyContent:'center', position:'relative', overflow:'hidden' }}>
           {plant.image_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={plant.image_url} alt={plant.name} style={{ width:'100%', height:'100%', objectFit:'cover' }}/>
+            <Image
+              src={plant.image_url}
+              alt={plant.name}
+              fill
+              sizes="(max-width:768px) 100vw, (max-width:1024px) 50vw, 33vw"
+              style={{ objectFit:'cover' }}
+              unoptimized
+            />
           ) : (
-            <span style={{ fontSize:56 }}>{getEmoji(plant.name)}</span>
+            <span style={{ fontSize:60 }}>{getEmoji(plant.name)}</span>
           )}
-          {/* Category badge */}
+          {/* Badge catégorie */}
           {plant.categories && (
-            <span style={{ position:'absolute', top:12, left:12, height:24, padding:'0 10px', background:'rgba(22,101,52,0.85)', backdropFilter:'blur(4px)', borderRadius:999, fontSize:11, fontWeight:700, color:C.white, display:'inline-flex', alignItems:'center' }}>
+            <span style={{ position:'absolute', top:12, left:12, height:26, padding:'0 12px', background:'rgba(22,101,52,0.85)', backdropFilter:'blur(4px)', borderRadius:999, fontSize:11, fontWeight:700, color:C.white, display:'inline-flex', alignItems:'center', zIndex:1 }}>
               {plant.categories.name}
             </span>
           )}
         </div>
 
-        {/* Content */}
+        {/* Contenu */}
         <div style={{ padding:'16px 18px' }}>
-          <h3 style={{ fontSize:16, fontWeight:700, color:'#111', fontFamily:"'Poppins',sans-serif", marginBottom:2, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{plant.name}</h3>
-
+          <h3 style={{ fontSize:16, fontWeight:700, color:'#111', fontFamily:"'Poppins',sans-serif", marginBottom:2, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+            {plant.name}
+          </h3>
           {plant.latin_name && (
             <p style={{ fontSize:12, color:'#9AA49A', fontStyle:'italic', marginBottom:8 }}>{plant.latin_name}</p>
           )}
-
-          <p className="line-clamp-2" style={{ fontSize:13, color:C.text, lineHeight:'20px', marginBottom:12 }}>{plant.description}</p>
-
+          <p className="line-clamp-2" style={{ fontSize:13, color:C.text, lineHeight:'20px', marginBottom:12 }}>
+            {plant.description}
+          </p>
           {plant.properties && plant.properties.length > 0 && (
             <div style={{ display:'flex', flexWrap:'wrap', gap:5, marginBottom:10 }}>
               {plant.properties.slice(0, 3).map((p, i) => (
@@ -62,7 +69,6 @@ export default function PlantCard({ plant }: PlantCardProps) {
               )}
             </div>
           )}
-
           {plant.contraindications && (
             <div style={{ display:'flex', alignItems:'center', gap:6, fontSize:12, color:'#D97706' }}>
               <AlertTriangle style={{ width:12, height:12 }}/> Contre-indications

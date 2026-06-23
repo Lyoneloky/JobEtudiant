@@ -1,4 +1,5 @@
 import { Leaf, Shield, Star, AlertTriangle, Search, BookOpen, MapPin, Activity } from 'lucide-react'
+import Navbar from '@/components/Navbar'
 
 /* ─── COULEURS TerraBio ─────────────────────── */
 const C = {
@@ -13,48 +14,6 @@ const C = {
   border: '#E8EDE4',
 }
 
-/* ─── NAVBAR ─────────────────────────────────── */
-function LandingNavbar() {
-  const links = [
-    { label: 'Plantes', href: '/plantes' },
-    { label: 'Symptômes', href: '/symptomes' },
-    { label: 'Glossaire', href: '/glossaire' },
-    { label: 'Conseils', href: '/conseils' },
-  ]
-  return (
-    <nav style={{ background: C.white, borderBottom: `1px solid ${C.border}`, position: 'sticky', top: 0, zIndex: 100 }}>
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px', height: 68, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        {/* Logo */}
-        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 14, textDecoration: 'none' }}>
-          <div style={{ width: 48, height: 48, background: `linear-gradient(135deg, ${C.primary}, ${C.primaryDark})`, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Leaf style={{ width: 26, height: 26, color: C.white }} />
-          </div>
-          <div>
-            <div style={{ fontSize: 22, fontWeight: 700, lineHeight: '26px', color: C.primaryDark, fontFamily: "'Poppins', sans-serif" }}>TerraBio</div>
-            <div style={{ fontSize: 12, color: C.textSub, marginTop: 1 }}>Santé naturelle · Cameroun</div>
-          </div>
-        </a>
-
-        {/* Links */}
-        <div style={{ display: 'flex', gap: 40, alignItems: 'center' }}>
-          {links.map(({ label, href }) => (
-            <a key={label} href={href} style={{ fontSize: 15, fontWeight: 500, color: '#1F1F1F', textDecoration: 'none' }}>{label}</a>
-          ))}
-        </div>
-
-        {/* CTA */}
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <a href="/auth/login" style={{ height: 44, padding: '0 20px', borderRadius: 12, border: `1.5px solid ${C.primaryDark}`, color: C.primaryDark, fontSize: 15, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', textDecoration: 'none', background: 'transparent' }}>
-            Connexion
-          </a>
-          <a href="/auth/register" style={{ height: 44, padding: '0 20px', borderRadius: 12, background: C.primaryDark, color: C.white, fontSize: 15, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', textDecoration: 'none', border: 'none' }}>
-            S&apos;inscrire
-          </a>
-        </div>
-      </div>
-    </nav>
-  )
-}
 
 /* ─── HERO ───────────────────────────────────── */
 function Hero() {
@@ -73,7 +32,7 @@ function Hero() {
           </div>
 
           {/* Headline */}
-          <h1 style={{ fontSize: 68, fontWeight: 800, lineHeight: '76px', letterSpacing: '-2px', color: '#111', margin: 0, fontFamily: "'Poppins', sans-serif" }}>
+          <h1 className="tb-hero-title" style={{ fontWeight: 800, color: '#111', margin: 0, fontFamily: "'Poppins', sans-serif" }}>
             Les plantes médicinales<br />du Cameroun,<br />
             <span style={{ color: C.primary }}>accessibles à tous.</span>
           </h1>
@@ -84,7 +43,7 @@ function Hero() {
           </p>
 
           {/* CTA Buttons */}
-          <div style={{ display: 'flex', gap: 18, marginTop: 38 }}>
+          <div className="tb-cta-btns">
             <a href="/plantes" style={{ height: 60, padding: '0 32px', borderRadius: 16, background: C.primaryDark, color: C.white, border: 'none', fontSize: 16, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none', boxShadow: '0 12px 30px rgba(22,101,52,0.3)' }}>
               <Search style={{ width: 18, height: 18 }} />
               Rechercher une plante
@@ -96,7 +55,7 @@ function Hero() {
           </div>
 
           {/* Mini stats */}
-          <div style={{ display: 'flex', gap: 32, marginTop: 44, paddingTop: 32, borderTop: `1px solid ${C.border}` }}>
+          <div className="tb-mini-stats" style={{ borderTop: `1px solid ${C.border}` }}>
             {[
               { value: '500+', label: 'Plantes' },
               { value: '100+', label: 'Symptômes' },
@@ -111,8 +70,8 @@ function Hero() {
           </div>
         </div>
 
-        {/* RIGHT — visual illustration */}
-        <div style={{ position: 'relative', height: 680, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {/* RIGHT — visual illustration (masqué sur mobile) */}
+        <div className="tb-hero-right">
           {/* Blob */}
           <div style={{ position: 'absolute', width: 520, height: 460, background: C.primaryLight, borderRadius: '48% 52% 61% 39% / 42% 44% 56% 58%', right: -40, top: 80, zIndex: 0 }} />
 
@@ -292,9 +251,9 @@ function CTABanner() {
 /* ─── FOOTER ─────────────────────────────────── */
 function LandingFooter() {
   return (
-    <footer style={{ background: '#0f2318', marginTop: 80, padding: '60px 80px 32px' }}>
+    <footer className="tb-landing-footer">
       <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 48, marginBottom: 48 }}>
+        <div className="tb-footer-inner">
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
               <div style={{ width: 40, height: 40, background: C.primary, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -319,7 +278,7 @@ function LandingFooter() {
             </div>
           ))}
         </div>
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="tb-footer-bottom" style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>© 2026 TerraBio. Tous droits réservés.</div>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>Fait pour la santé naturelle du Cameroun</div>
         </div>
@@ -332,7 +291,7 @@ function LandingFooter() {
 export default function LandingPage() {
   return (
     <div style={{ fontFamily: '"Inter", Arial, sans-serif', background: C.bg, overflowX: 'hidden' }}>
-      <LandingNavbar />
+      <Navbar />
       <Hero />
       <Features />
       <HowItWorks />

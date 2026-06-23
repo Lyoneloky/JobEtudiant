@@ -21,10 +21,10 @@ export default function DeletePlantButton({ plantId, plantName }: { plantId: str
     <button
       onClick={handleDelete}
       disabled={loading}
-      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
       title="Supprimer"
+      style={{ width: 30, height: 30, borderRadius: 8, background: '#FFF5F5', border: '1px solid #FECACA', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#DC2626', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.5 : 1 }}
     >
-      <Trash2 className="w-4 h-4" />
+      <Trash2 style={{ width: 13, height: 13 }} />
     </button>
   )
 }

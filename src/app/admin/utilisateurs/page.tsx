@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
-import Navbar from '@/components/Navbar'
 import Link from 'next/link'
 import { Users, ArrowLeft, Shield, UserCheck, UserX } from 'lucide-react'
 
@@ -52,9 +51,7 @@ export default async function AdminUtilisateursPage() {
   }
 
   return (
-    <div style={{ fontFamily:'"Inter",Arial,sans-serif', background:C.bg, minHeight:'100vh' }}>
-      <Navbar />
-      <main style={{ maxWidth:1100, margin:'0 auto', padding:'40px 24px 80px' }}>
+    <div style={{ maxWidth:1100, padding:'8px 0 60px' }}>
 
         <Link href="/admin/plantes" style={{ display:'inline-flex', alignItems:'center', gap:8, fontSize:14, color:C.text, textDecoration:'none', marginBottom:28 }}>
           <ArrowLeft style={{ width:16, height:16 }}/> Retour à la gestion des plantes
@@ -159,7 +156,6 @@ export default async function AdminUtilisateursPage() {
             </div>
           </>
         )}
-      </main>
     </div>
   )
 }

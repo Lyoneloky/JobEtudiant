@@ -165,14 +165,35 @@ LIMITE : maximum 3 entrées d'état. Quand une 4ème est ajoutée :
 ## 📍 ÉTAT — 3 ENTRÉES MAX
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ENTRÉE 1 — 2026-05-30]
-Projet TerraBio initialisé et documenté dans CLAUDE.md.
-Toutes les pages sont codées (voir tableau complet dans CLAUDE0.md).
-Supabase non encore connecté (.env.local à remplir avec vraies clés).
-Reste à faire : rôles admin, images plantes, pagination, réinitialisation MDP,
-fil réponses consultations côté utilisateur.
+[ENTRÉE 1 — 2026-06-17] ← SESSION LA PLUS RÉCENTE
+Supabase CONNECTÉ · URL gilaqvapqultsntttjqk.supabase.co · .env.local configuré.
+DB : 18 plantes (10 camerounaises + 8 du livre "Médecin des Pauvres") · 30 symptômes ·
+25 termes glossaire · 6 conseils · 6 locations · Email signups activé dans Supabase.
 
-[ENTRÉE 2]
+Travaux effectués dans cette session :
+• Dashboard admin redesigné : no-scroll (height:100vh), sidebar fixe, stats compactes
+• Admin layout partagé : src/app/admin/layout.tsx + src/components/AdminSidebar.tsx
+  → toutes les pages /admin/* héritent automatiquement de la sidebar (auth admin vérifiée)
+• Page /admin/plantes redessinée : tableau pro + stats Total/Publiées/Brouillons
+• Pages preview admin : /admin/app/catalogue|symptomes|carte|glossaire|conseils
+  → l'admin voit les pages utilisateur avec sa sidebar admin maintenue
+• 8 nouvelles plantes insérées via API Supabase (OCR du livre Beauvillard 1912) :
+  Menthe poivrée, Camomille, Thym commun, Romarin, Ortie dioïque, Sauge, Pissenlit, Mélisse
+• Navigation fluide : tous les <a href> internes → <Link> Next.js (plus de rechargement page)
+• Logo TerraBio (public/logo.png) intégré : Navbar · AdminSidebar · dashboard sidebar ·
+  topbar mobile · pages auth/login et auth/register
+
+[ENTRÉE 2 — 2026-06-17] RESTE À FAIRE (par priorité soutenance)
+1. PRIORITÉ HAUTE — Réponse admin aux consultations :
+   /admin/consultations/[id]/page.tsx existe et est fonctionnelle (formulaire réponse OK)
+   → Vérifier que respondConsultation() (lib/actions.ts) fonctionne bien en prod
+2. PRIORITÉ HAUTE — Reset/Update password :
+   /auth/reset-password et /auth/update-password → pages existent, logique Supabase à brancher
+3. PRIORITÉ MOYENNE — Upload images plantes :
+   image_url = NULL pour toutes les 18 plantes → configurer Supabase Storage bucket "plants"
+4. PRIORITÉ MOYENNE — Gestion rôles dans /admin/utilisateurs :
+   Tableau users affiché (service_role), mais modifier le rôle (user→admin) non implémenté
+5. PRIORITÉ BASSE — Tests : 0% couverture (Vitest/Playwright non configurés)
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Leaf, Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 
 const C = {
   primary: '#22c55e',
@@ -60,9 +60,7 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 72, height: 72, background: `linear-gradient(135deg, ${C.primary}, ${C.primaryDark})`, borderRadius: 20, marginBottom: 16 }}>
-            <Leaf style={{ width: 34, height: 34, color: C.white }} />
-          </div>
+          <img src="/logo.png" alt="TerraBio" style={{ width: 72, height: 72, borderRadius: 20, marginBottom: 16 }} />
           <div style={{ fontSize: 26, fontWeight: 800, color: C.primaryDark, fontFamily: "'Poppins', sans-serif", marginBottom: 4 }}>TerraBio</div>
           <div style={{ fontSize: 13, color: C.text, marginBottom: 16 }}>Santé naturelle · Cameroun</div>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: '#111', marginBottom: 6 }}>Connexion</h1>

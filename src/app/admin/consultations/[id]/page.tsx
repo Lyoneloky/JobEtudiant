@@ -3,7 +3,6 @@
 import { useState, useEffect, useTransition } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
-import Navbar from '@/components/Navbar'
 import { createClient } from '@/lib/supabase/client'
 import { respondConsultation } from '@/lib/actions'
 import { ArrowLeft, Send, CheckCircle, AlertTriangle, User, Calendar } from 'lucide-react'
@@ -81,9 +80,8 @@ export default function AdminConsultationDetailPage() {
 
   if (loading) {
     return (
-      <div style={{ fontFamily: '"Inter", Arial, sans-serif', background: C.bg, minHeight: '100vh' }}>
-        <Navbar />
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 400, color: C.text }}>Chargement...</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 400, color: C.text }}>
+        Chargement...
       </div>
     )
   }
@@ -94,9 +92,7 @@ export default function AdminConsultationDetailPage() {
   const userName = consultation.profiles?.display_name ?? 'Utilisateur anonyme'
 
   return (
-    <div style={{ fontFamily: '"Inter", Arial, sans-serif', background: C.bg, minHeight: '100vh' }}>
-      <Navbar />
-      <main style={{ maxWidth: 800, margin: '0 auto', padding: '40px 24px 80px' }}>
+    <div style={{ maxWidth: 800, padding: '8px 0 60px' }}>
 
         <Link href="/admin/consultations" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 14, color: C.text, textDecoration: 'none', marginBottom: 28 }}>
           <ArrowLeft style={{ width: 16, height: 16 }} /> Retour aux consultations
@@ -210,7 +206,6 @@ export default function AdminConsultationDetailPage() {
           </button>
         </form>
 
-      </main>
     </div>
   )
 }

@@ -50,12 +50,19 @@ export default function RegisterPage() {
 
     setLoading(true)
     try {
-      const { error } = await supabase.auth.signUp({ email, password })
+      const { data, error } = await supabase.auth.signUp({ email, password })
       if (error) {
         setError(error.message)
         setLoading(false)
         return
       }
+      // Si session déjà créée → confirmation email désactivée → connexion directe
+      if (data.session) {
+        router.push('/dashboard')
+        router.refresh()
+        return
+      }
+      // Sinon → confirmation email requise
       setSuccess(true)
       setTimeout(() => router.push('/auth/login'), 3000)
     } catch {
@@ -84,9 +91,7 @@ export default function RegisterPage() {
 
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 72, height: 72, background: `linear-gradient(135deg, ${C.primary}, ${C.primaryDark})`, borderRadius: 20, marginBottom: 16 }}>
-            <Leaf style={{ width: 34, height: 34, color: C.white }} />
-          </div>
+          <img src="/logo.png" alt="TerraBio" style={{ width: 72, height: 72, borderRadius: 20, marginBottom: 16 }} />
           <div style={{ fontSize: 26, fontWeight: 800, color: C.primaryDark, fontFamily: "'Poppins', sans-serif", marginBottom: 4 }}>TerraBio</div>
           <div style={{ fontSize: 13, color: C.text, marginBottom: 16 }}>Santé naturelle · Cameroun</div>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: '#111', marginBottom: 6 }}>Créer un compte</h1>

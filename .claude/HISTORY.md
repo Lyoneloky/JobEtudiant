@@ -6,4 +6,9 @@
 # Les entrées d'état archivées depuis CLAUDE.md apparaissent ici
 # dans l'ordre anti-chronologique (la plus récente en haut).
 
-[Les entrées seront ajoutées ici automatiquement]
+[ARCHIVÉ — 2026-05-30]
+Projet TerraBio initialisé et documenté dans CLAUDE.md.
+Toutes les pages sont codées (voir tableau complet dans CLAUDE0.md).
+Supabase non encore connecté (.env.local à remplir avec vraies clés).
+Reste à faire : rôles admin, images plantes, pagination, réinitialisation MDP,
+fil réponses consultations côté utilisateur.

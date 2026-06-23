@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import Navbar from '@/components/Navbar'
 import { Stethoscope, Clock, CheckCircle, Eye, ArrowLeft } from 'lucide-react'
 
 const C = { dark: '#166534', light: '#dcfce7', text: '#616161', border: '#E8EDE4', white: '#FFFFFF', bg: '#F8FAF5' }
@@ -30,9 +29,7 @@ export default async function AdminConsultationsPage() {
   }
 
   return (
-    <div style={{ fontFamily: '"Inter", Arial, sans-serif', background: C.bg, minHeight: '100vh' }}>
-      <Navbar />
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 24px 80px' }}>
+    <div style={{ maxWidth: 1100, padding: '8px 0 60px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32, flexWrap: 'wrap', gap: 12 }}>
           <div>
             <Link href="/admin/plantes" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, color: C.text, textDecoration: 'none', marginBottom: 10 }}>
@@ -115,7 +112,6 @@ export default async function AdminConsultationsPage() {
             </table>
           )}
         </div>
-      </div>
     </div>
   )
 }

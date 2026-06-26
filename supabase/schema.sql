@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   id           UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   display_name TEXT,
   role         TEXT DEFAULT 'user' CHECK (role IN ('user', 'admin', 'herboriste')),
+  approved     BOOLEAN DEFAULT true,
   created_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -117,8 +118,25 @@ CREATE TABLE IF NOT EXISTS locations (
 
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  v_role TEXT;
+  v_approved BOOLEAN;
 BEGIN
-  INSERT INTO public.profiles (id) VALUES (NEW.id) ON CONFLICT (id) DO NOTHING;
+  v_role := COALESCE(NEW.raw_user_meta_data->>'role', 'user');
+  v_approved := CASE WHEN v_role = 'herboriste' THEN FALSE ELSE TRUE END;
+
+  INSERT INTO public.profiles (id, display_name, role, approved)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'display_name', NEW.raw_user_meta_data->>'full_name'),
+    v_role,
+    v_approved
+  )
+  ON CONFLICT (id) DO UPDATE
+  SET display_name = EXCLUDED.display_name,
+      role = EXCLUDED.role,
+      approved = CASE WHEN EXCLUDED.role = 'herboriste' THEN FALSE ELSE TRUE END,
+      updated_at = NOW();
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -477,3 +495,60 @@ INSERT INTO locations (name, type, latitude, longitude, address, city, region, d
   ('Marché Mboppi — Plantes fraîches',  'marche',        4.0444, 9.7040,  'Marché Mboppi',   'Douala',  'Littoral','Marché de Douala avec vendeurs de plantes médicinales fraîches et séchées.'),
   ('Marché de Bafoussam',               'marche',        5.4781, 10.4179, 'Centre-ville',    'Bafoussam','Ouest', 'Marché avec forte tradition de médecine traditionnelle, région riche en plantes endémiques.')
 ON CONFLICT DO NOTHING;
+
+-- ────────────────────────────────────────────────────────────
+-- TABLE : herboriste_applications (Demandes d'inscription herboristes en attente)
+-- ────────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS herboriste_applications (
+  id           UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  email        TEXT NOT NULL UNIQUE,
+  password     TEXT NOT NULL,
+  display_name TEXT NOT NULL,
+  status       TEXT DEFAULT 'en_attente' CHECK (status IN ('en_attente', 'approuve', 'rejete')),
+  created_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at   TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE herboriste_applications ENABLE ROW LEVEL SECURITY;
+
+-- ────────────────────────────────────────────────────────────
+-- AJOUT AUTEUR AUX CONSEILS (herboriste qui publie)
+-- ────────────────────────────────────────────────────────────
+
+ALTER TABLE tips ADD COLUMN IF NOT EXISTS author_id   uuid REFERENCES profiles(id);
+ALTER TABLE tips ADD COLUMN IF NOT EXISTS author_name text;
+
+-- ────────────────────────────────────────────────────────────
+-- TABLE : side_effect_reports (Signalements d'effets secondaires)
+-- ────────────────────────────────────────────────────────────
+
+CREATE TABLE IF NOT EXISTS side_effect_reports (
+  id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tip_id              uuid REFERENCES tips(id) ON DELETE CASCADE NOT NULL,
+  user_id             uuid REFERENCES profiles(id) NOT NULL,
+  user_name           text DEFAULT 'Utilisateur',
+  description         text NOT NULL,
+  herboriste_response text,
+  herboriste_id       uuid REFERENCES profiles(id),
+  herboriste_name     text,
+  status              text DEFAULT 'en_attente'
+                        CHECK (status IN ('en_attente', 'repondu')),
+  created_at          timestamptz DEFAULT now(),
+  updated_at          timestamptz DEFAULT now()
+);
+
+ALTER TABLE side_effect_reports ENABLE ROW LEVEL SECURITY;
+
+-- Tous les utilisateurs connectés peuvent lire les signalements
+CREATE POLICY "reports_read"   ON side_effect_reports
+  FOR SELECT TO authenticated USING (true);
+
+-- Un utilisateur ne peut signaler qu'en son nom
+CREATE POLICY "reports_insert" ON side_effect_reports
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+
+-- Herboristes et admins peuvent répondre (UPDATE)
+CREATE POLICY "reports_update" ON side_effect_reports
+  FOR UPDATE TO authenticated USING (true);
+

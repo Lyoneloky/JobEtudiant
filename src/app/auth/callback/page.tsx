@@ -14,13 +14,19 @@ export default async function AuthCallbackPage({
 
   if (params.code) {
     const supabase = await createClient()
-    const { error } = await supabase.auth.exchangeCodeForSession(params.code)
+    const { error, data: session } = await supabase.auth.exchangeCodeForSession(params.code)
 
     if (!error) {
       if (params.type === 'recovery') {
         redirect('/auth/update-password')
       }
-      redirect('/dashboard')
+      // Redirection selon le rôle : admin/herboriste → dashboard, utilisateur standard → accueil
+      const { data: prof } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single()
+      redirect((prof?.role === 'admin' || prof?.role === 'herboriste') ? '/dashboard' : '/plantes')
     }
   }
 

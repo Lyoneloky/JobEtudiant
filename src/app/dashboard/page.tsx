@@ -8,7 +8,7 @@ import {
   Leaf, Home, Heart, Bell, Sun, BookOpen, Settings, Search,
   ChevronRight, AlertTriangle, Info, ArrowRight, Shield, MapPin,
   Activity, FileText, Clock, CheckCircle, MessageSquare, Menu, X,
-  Users, PlusCircle, Edit, LayoutDashboard, TrendingUp, LogOut
+  Users, PlusCircle, Edit, LayoutDashboard, TrendingUp, LogOut, Eye
 } from 'lucide-react'
 
 const C = {
@@ -85,6 +85,18 @@ const ADMIN_NAV = [
   {Icon:Settings,       label:'Profil',          href:'/profil',              section:'profile'},
 ]
 
+const HERBORISTE_NAV = [
+  {Icon:LayoutDashboard,label:'Dashboard',       href:'/dashboard',           section:'admin'},
+  {Icon:Leaf,           label:'Plantes',         href:'/admin/plantes',       section:'admin'},
+  {Icon:MessageSquare,  label:'Consultations',   href:'/dashboard',           section:'admin'},
+  {Icon:Search,         label:'Catalogue',       href:'/plantes',             section:'app'},
+  {Icon:Activity,       label:'Symptômes',       href:'/symptomes',           section:'app'},
+  {Icon:MapPin,         label:'Carte',           href:'/carte',               section:'app'},
+  {Icon:BookOpen,       label:'Glossaire',       href:'/glossaire',           section:'app'},
+  {Icon:Sun,            label:'Conseils',        href:'/conseils',            section:'app'},
+  {Icon:Settings,       label:'Profil',          href:'/profil',              section:'profile'},
+]
+
 function NavItem({Icon,label,href,active}:{Icon:React.ElementType;label:string;href:string;active?:boolean}) {
   return (
     <Link href={href} style={{height:40,padding:'0 12px',borderRadius:10,display:'flex',alignItems:'center',gap:10,background:active?C.primaryLight:'transparent',color:active?C.primaryDark:'#3D3D3D',fontWeight:active?600:500,fontSize:13,textDecoration:'none'}}>
@@ -98,11 +110,17 @@ function SectionLabel({label}:{label:string}) {
   return <div style={{fontSize:10,fontWeight:700,color:'#9AA49A',letterSpacing:1.5,padding:'8px 12px 3px',textTransform:'uppercase'}}>{label}</div>
 }
 
-function Sidebar({displayName,email,isAdmin,open,onClose,navContent,onSignOut}:{
-  displayName:string|null;email:string|null;isAdmin:boolean;open:boolean;onClose:()=>void;navContent:React.ReactNode;onSignOut:()=>void
+function Sidebar({displayName,email,role,open,onClose,navContent,onSignOut}:{
+  displayName:string|null;email:string|null;role:string;open:boolean;onClose:()=>void;navContent:React.ReactNode;onSignOut:()=>void
 }) {
   const name    = displayName||email?.split('@')[0]||'Utilisateur'
   const initial = name.charAt(0).toUpperCase()
+
+  const roleBadge = role==='admin'
+    ? {label:'Admin',      bg:'#F3E8FF', color:'#6B21A8'}
+    : role==='herboriste'
+    ? {label:'Herboriste', bg:C.primaryLight, color:C.primaryDark}
+    : {label:'Utilisateur',bg:'#F0F0F0',      color:'#555'}
 
   return (
     <>
@@ -127,7 +145,7 @@ function Sidebar({displayName,email,isAdmin,open,onClose,navContent,onSignOut}:{
             </div>
             <div style={{minWidth:0}}>
               <div style={{fontSize:13,fontWeight:600,color:'#1B1B1B',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{name}</div>
-              <span style={{fontSize:10,background:isAdmin?'#F3E8FF':C.primaryLight,color:isAdmin?'#6B21A8':C.primaryDark,padding:'1px 7px',borderRadius:999,fontWeight:700}}>{isAdmin?'Admin':'Utilisateur'}</span>
+              <span style={{fontSize:10,background:roleBadge.bg,color:roleBadge.color,padding:'1px 7px',borderRadius:999,fontWeight:700}}>{roleBadge.label}</span>
             </div>
           </div>
         </div>
@@ -228,7 +246,7 @@ function AdminDashboard({displayName,email,adminStats,recentCons,plants}:{
 
   return (
     <div className="tb-dashboard" style={{fontFamily:'"Inter",Arial,sans-serif',background:C.bg}}>
-      <Sidebar displayName={displayName} email={email} isAdmin open={sidebarOpen} onClose={()=>setSidebarOpen(false)} onSignOut={handleSignOut}
+      <Sidebar displayName={displayName} email={email} role="admin" open={sidebarOpen} onClose={()=>setSidebarOpen(false)} onSignOut={handleSignOut}
         navContent={<>
           <SectionLabel label="Administration"/>
           {ADMIN_NAV.filter(n=>n.section==='admin').map(({Icon,label,href})=>(<NavItem key={href} Icon={Icon} label={label} href={href} active={pathname===href}/>))}
@@ -363,6 +381,160 @@ function AdminDashboard({displayName,email,adminStats,recentCons,plants}:{
   )
 }
 
+/* ═══════════════════════ HERBORISTE DASHBOARD ══════════════ */
+function HerboristeDashboard({displayName,email,herbStats,recentCons,plants}:{
+  displayName:string|null;email:string|null;herbStats:AdminStats;recentCons:ConsultRow[];plants:PlantRow[]
+}) {
+  const [sidebarOpen,setSidebarOpen] = useState(false)
+  const name    = displayName||email?.split('@')[0]||'Herboriste'
+  const pathname = typeof window!=='undefined'?window.location.pathname:''
+  const router  = useRouter()
+
+  async function handleSignOut() {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/')
+  }
+
+  return (
+    <div className="tb-dashboard" style={{fontFamily:'"Inter",Arial,sans-serif',background:C.bg}}>
+      <Sidebar displayName={displayName} email={email} role="herboriste" open={sidebarOpen} onClose={()=>setSidebarOpen(false)} onSignOut={handleSignOut}
+        navContent={<>
+          <SectionLabel label="Espace herboriste"/>
+          {HERBORISTE_NAV.filter(n=>n.section==='admin').map(({Icon,label,href})=>(<NavItem key={label} Icon={Icon} label={label} href={href} active={pathname===href}/>))}
+          <SectionLabel label="Application"/>
+          {HERBORISTE_NAV.filter(n=>n.section==='app').map(({Icon,label,href})=>(<NavItem key={label} Icon={Icon} label={label} href={href} active={pathname===href}/>))}
+          <SectionLabel label="Compte"/>
+          {HERBORISTE_NAV.filter(n=>n.section==='profile').map(({Icon,label,href})=>(<NavItem key={label} Icon={Icon} label={label} href={href} active={pathname===href}/>))}
+        </>}
+      />
+
+      <div className="tb-main-content tb-admin-content">
+        <TopBar onMenuClick={()=>setSidebarOpen(true)} name={name}/>
+
+        {/* Ligne 1 : badge + salutation + raccourcis */}
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10,flexShrink:0,flexWrap:'wrap',gap:8}}>
+          <div style={{display:'flex',alignItems:'center',gap:10}}>
+            <div style={{display:'inline-flex',alignItems:'center',gap:5,background:C.primaryLight,borderRadius:999,padding:'3px 10px',flexShrink:0}}>
+              <span style={{fontSize:11}}>🌿</span><span style={{fontSize:10,fontWeight:700,color:C.primaryDark,letterSpacing:0.3}}>HERBORISTE</span>
+            </div>
+            <h1 style={{fontSize:20,fontWeight:800,color:C.dark,letterSpacing:'-0.3px',fontFamily:"'Poppins',sans-serif",whiteSpace:'nowrap'}}>Bonjour, {name} 👋</h1>
+          </div>
+          <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+            {[{href:'/plantes',label:'Catalogue'},{href:'/symptomes',label:'Symptômes'},{href:'/carte',label:'Carte'},{href:'/conseils',label:'Conseils'}].map(({href,label})=>(
+              <Link key={href} href={href} style={{height:30,padding:'0 11px',background:C.white,border:`1px solid ${C.border}`,borderRadius:8,color:'#333',fontSize:12,fontWeight:500,textDecoration:'none',display:'inline-flex',alignItems:'center'}}>{label}</Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Ligne 2 : stats */}
+        <div className="tb-grid-4" style={{marginBottom:10,flexShrink:0}}>
+          <StatCard value={herbStats.plants}      label="Plantes publiées"      Icon={Leaf}          bg={C.primaryLight} iconColor={C.primaryDark}/>
+          <StatCard value={herbStats.pendingCons} label="Consultations en attente" Icon={Clock}      bg="#FFE8B0"         iconColor="#E65100"/>
+          <StatCard value={herbStats.totalCons}   label="Mes consultations"     Icon={MessageSquare} bg="#D6E8FF"         iconColor="#1565C0"/>
+          <StatCard value={herbStats.glossary}    label="Termes glossaire"      Icon={BookOpen}      bg="#E9D5FF"         iconColor="#6B21A8"/>
+        </div>
+
+        {/* Ligne 3 : corps */}
+        <div className="tb-admin-main">
+
+          {/* Consultations récentes */}
+          <div style={{background:C.white,borderRadius:16,border:`1px solid ${C.border}`,overflow:'hidden',display:'flex',flexDirection:'column'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'10px 18px',borderBottom:`1px solid ${C.border}`,background:'#FAFBF8',flexShrink:0}}>
+              <h2 style={{fontSize:13,fontWeight:700,color:'#111',fontFamily:"'Poppins',sans-serif"}}>Mes consultations récentes</h2>
+              {herbStats.pendingCons>0&&(
+                <span style={{height:22,padding:'0 8px',background:'#FFF8EF',borderRadius:999,fontSize:11,fontWeight:700,color:'#E65100',display:'inline-flex',alignItems:'center',gap:4}}>
+                  <Clock style={{width:10,height:10}}/>{herbStats.pendingCons} en attente
+                </span>
+              )}
+            </div>
+            {recentCons.length===0?(
+              <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'30px 18px',textAlign:'center',color:C.text}}>
+                <MessageSquare style={{width:32,height:32,color:'#E8EDE4',marginBottom:8}}/>
+                <p style={{fontSize:13,fontWeight:500,marginBottom:4}}>Aucune consultation reçue.</p>
+                <p style={{fontSize:12}}>Les demandes qui vous sont adressées apparaîtront ici.</p>
+              </div>
+            ):(
+              <>
+                <div className="tb-consult-header">
+                  <div style={{fontSize:10,fontWeight:700,color:C.text,textTransform:'uppercase',letterSpacing:0.5}}>Symptômes décrits</div>
+                  <div className="tb-consult-col-user" style={{fontSize:10,fontWeight:700,color:C.text,textTransform:'uppercase',letterSpacing:0.5}}>Patient</div>
+                  <div className="tb-consult-col-date" style={{fontSize:10,fontWeight:700,color:C.text,textTransform:'uppercase',letterSpacing:0.5}}>Date</div>
+                  <div style={{fontSize:10,fontWeight:700,color:C.text,textTransform:'uppercase',letterSpacing:0.5}}>Statut</div>
+                </div>
+                <div style={{flex:1,overflowY:'auto'}}>
+                  {recentCons.map((c,i)=>(
+                    <div key={c.id} className="tb-consult-row" style={{borderBottom:i<recentCons.length-1?`1px solid #F5F7F4`:'none'}}>
+                      <p style={{fontSize:12,color:'#111',lineHeight:'17px',overflow:'hidden',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical' as const,margin:0}}>{c.symptoms_description}</p>
+                      <div className="tb-consult-col-user" style={{fontSize:11,color:C.text,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{(c.profiles as {display_name:string|null}|null)?.display_name||'—'}</div>
+                      <div className="tb-consult-col-date" style={{fontSize:11,color:C.text,whiteSpace:'nowrap'}}>{new Date(c.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}</div>
+                      <div style={{display:'flex',flexDirection:'column',gap:3,alignItems:'flex-start'}}>
+                        <StatusBadge status={c.status}/>
+                        {c.status==='en_attente'&&(
+                          <Link href={`/admin/consultations/${c.id}`} style={{fontSize:10,fontWeight:700,color:C.primaryDark,textDecoration:'none'}}>Répondre →</Link>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Colonne droite */}
+          <div style={{display:'flex',flexDirection:'column',gap:10,overflowY:'auto',paddingRight:2}}>
+
+            {/* Actions rapides */}
+            <div style={{background:C.white,borderRadius:14,padding:'12px 14px',border:`1px solid ${C.border}`,flexShrink:0}}>
+              <div style={{fontSize:12,fontWeight:700,color:'#111',marginBottom:8}}>Actions rapides</div>
+              <div style={{display:'flex',flexDirection:'column',gap:5}}>
+                {[
+                  {href:'/admin/plantes/nouveau', Icon:PlusCircle,   label:'Ajouter une plante',    bg:C.primaryDark,  color:C.white},
+                  {href:'/dashboard',             Icon:MessageSquare,label:'Mes consultations',      bg:'#EFF6FF',      color:'#1565C0'},
+                  {href:'/admin/plantes',         Icon:Edit,         label:'Gérer le catalogue',    bg:C.primaryLight, color:C.primaryDark},
+                  {href:'/conseils',              Icon:Sun,          label:'Publier un conseil',    bg:'#F3E8FF',      color:'#6B21A8'},
+                ].map(({href,Icon,label,bg,color})=>(
+                  <Link key={label} href={href} style={{height:32,padding:'0 10px',borderRadius:8,background:bg,color,fontSize:11,fontWeight:600,display:'flex',alignItems:'center',gap:7,textDecoration:'none'}}>
+                    <Icon style={{width:12,height:12,flexShrink:0}}/>{label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Catalogue plantes */}
+            <div style={{background:C.white,borderRadius:14,padding:'12px 14px',border:`1px solid ${C.border}`,flexShrink:0}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+                <div style={{fontSize:12,fontWeight:700,color:'#111'}}>Catalogue</div>
+                <Link href="/admin/plantes" style={{fontSize:11,color:C.primaryDark,fontWeight:600,textDecoration:'none'}}>Gérer</Link>
+              </div>
+              <div style={{display:'flex',flexDirection:'column',gap:5}}>
+                {plants.map((p,i)=>(
+                  <div key={p.id} style={{display:'flex',alignItems:'center',gap:8}}>
+                    <div style={{width:26,height:26,borderRadius:7,background:plantColor(i),display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,flexShrink:0}}>{plantEmoji(p.name)}</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:11,fontWeight:600,color:'#1A1A1A',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{p.name}</div>
+                    </div>
+                    <Link href={`/admin/plantes/${p.id}/modifier`} style={{fontSize:10,fontWeight:600,color:C.primaryDark,textDecoration:'none',flexShrink:0}}>Éditer</Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Rappels santé */}
+            <div style={{background:C.white,borderRadius:14,padding:'12px 14px',border:`1px solid ${C.border}`,flexShrink:0}}>
+              <div style={{fontSize:12,fontWeight:700,color:'#111',marginBottom:7}}>Rappels santé</div>
+              <div style={{display:'flex',flexDirection:'column',gap:5}}>
+                {SAFETY_ALERTS_ADMIN.map((a,i)=><AlertItem key={i} {...a}/>)}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /* ═══════════════════════ USER DASHBOARD ════════════════════ */
 const SAFETY_ALERTS = [
   {type:'red',   title:'Grossesse & plantes',  desc:'Neem, papayer et citronnelle contre-indiqués.'},
@@ -389,7 +561,7 @@ function UserDashboard({displayName,email,favoritePlants,allPlants,consultations
 
   return (
     <div className="tb-dashboard" style={{fontFamily:'"Inter",Arial,sans-serif',background:C.bg,minHeight:'100vh'}}>
-      <Sidebar displayName={displayName} email={email} isAdmin={false} open={sidebarOpen} onClose={()=>setSidebarOpen(false)} onSignOut={handleSignOut}
+      <Sidebar displayName={displayName} email={email} role="user" open={sidebarOpen} onClose={()=>setSidebarOpen(false)} onSignOut={handleSignOut}
         navContent={USER_NAV.map(({Icon,label,href})=>(<NavItem key={href} Icon={Icon} label={label} href={href} active={pathname===href}/>))}
       />
 
@@ -577,6 +749,22 @@ export default function DashboardPage() {
       const {data:prof} = await supabase.from('profiles').select('display_name,role').eq('id',uid).single()
       setProfile(prof??null)
 
+      if(prof?.role==='herboriste'){
+        const [{count:pc},{count:tc},{count:gc},{count:plc},{data:lc},{data:pl}] = await Promise.all([
+          supabase.from('consultations').select('*',{count:'exact',head:true}).eq('herboriste_id',uid).eq('status','en_attente'),
+          supabase.from('consultations').select('*',{count:'exact',head:true}).eq('herboriste_id',uid),
+          supabase.from('glossary').select('*',{count:'exact',head:true}),
+          supabase.from('plants').select('*',{count:'exact',head:true}).eq('is_published',true),
+          supabase.from('consultations').select('id,symptoms_description,status,admin_response,created_at,profiles(display_name)').eq('herboriste_id',uid).order('created_at',{ascending:false}).limit(5),
+          supabase.from('plants').select('id,name,latin_name,description,properties').eq('is_published',true).order('created_at',{ascending:false}).limit(5),
+        ])
+        setAdminStats({plants:plc??0,pendingCons:pc??0,totalCons:tc??0,glossary:gc??0})
+        setRecentCons((lc as unknown as ConsultRow[])??[])
+        setAllPlants(pl??[])
+        setLoading(false)
+        return
+      }
+
       if(prof?.role==='admin'){
         const [{count:pc},{count:tc},{count:gc},{count:plc},{data:lc},{data:pl}] = await Promise.all([
           supabase.from('consultations').select('*',{count:'exact',head:true}).eq('status','en_attente'),
@@ -622,6 +810,9 @@ export default function DashboardPage() {
 
   if(profile?.role==='admin'){
     return <AdminDashboard displayName={profile.display_name} email={email} adminStats={adminStats} recentCons={recentCons} plants={allPlants}/>
+  }
+  if(profile?.role==='herboriste'){
+    return <HerboristeDashboard displayName={profile.display_name} email={email} herbStats={adminStats} recentCons={recentCons} plants={allPlants}/>
   }
   return <UserDashboard displayName={profile?.display_name??null} email={email} favoritePlants={favoritePlants} allPlants={allPlants} consultations={consultations} tip={tip} totalPlants={totalPlants}/>
 }

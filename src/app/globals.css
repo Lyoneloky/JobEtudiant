@@ -146,3 +146,45 @@ body {
   .tb-landing-footer { padding:32px 16px 20px; margin-top:40px; }
   .tb-footer-bottom { flex-direction:column; gap:8px; text-align:center; }
 }
+
+/* ── Section À propos : image + texte ───────────────────────── */
+.tb-apropos { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+.tb-apropos-img { border-radius:28px; overflow:hidden; height:420px; position:relative; }
+.tb-plants-teaser { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+
+@media (max-width:1024px) {
+  .tb-apropos { grid-template-columns:1fr; gap:36px; }
+  .tb-apropos-img { height:300px; }
+  .tb-plants-teaser { grid-template-columns:repeat(3,1fr); gap:16px; }
+}
+@media (max-width:768px) {
+  .tb-plants-teaser { grid-template-columns:1fr; }
+  .tb-apropos-img { height:240px; }
+}
+
+/* ── Animations de balancement organique (comme des feuilles d'arbre) ── */
+@keyframes leaf-sway-1 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(15px, -15px) rotate(3deg) scale(1.02);
+  }
+}
+
+@keyframes leaf-sway-2 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(-15px, 10px) rotate(-2deg) scale(0.98);
+  }
+}
+
+.animate-sway-1 {
+  animation: leaf-sway-1 14s ease-in-out infinite alternate;
+}
+
+.animate-sway-2 {
+  animation: leaf-sway-2 18s ease-in-out infinite alternate;
+}

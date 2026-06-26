@@ -5,7 +5,7 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   Nom        : TerraBio
-  Type       : Plateforme web académique (projet de stage DTS Génie Logiciel)
+  Type       : Plateforme web personnalisée
   Description: Plateforme intelligente d'aide à l'utilisation responsable des
                plantes médicinales du Cameroun. Catalogue, recherche par symptôme,
                carte interactive, consultation personnalisée, espace admin.
@@ -13,7 +13,7 @@
   Backend    : Supabase (PostgreSQL managé + Auth GoTrue + RLS + REST auto)
   Frontend   : Next.js 16.2.6 (App Router, Turbopack) + TypeScript 5 + Tailwind CSS 4
   Déploiement: [non défini — MVP pour soutenance]
-  Équipe     : Solo — NOAH MEKONGO Barnabé Lionel (IAI-Cameroun / Digital Generation Co.)
+  Équipe     : Solo — NOAH MEKONGO Barnabé Lionel (IAI-Cameroun)
 
   Stack complète :
     Carte       : Leaflet 1.9.4 + react-leaflet 5.0.0
@@ -165,35 +165,31 @@ LIMITE : maximum 3 entrées d'état. Quand une 4ème est ajoutée :
 ## 📍 ÉTAT — 3 ENTRÉES MAX
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ENTRÉE 1 — 2026-06-17] ← SESSION LA PLUS RÉCENTE
-Supabase CONNECTÉ · URL gilaqvapqultsntttjqk.supabase.co · .env.local configuré.
-DB : 18 plantes (10 camerounaises + 8 du livre "Médecin des Pauvres") · 30 symptômes ·
-25 termes glossaire · 6 conseils · 6 locations · Email signups activé dans Supabase.
+[ENTRÉE 1 — 2026-06-26] ← SESSION LA PLUS RÉCENTE
+✅ Dashboard herboriste + gestion des demandes d'inscription :
+• dashboard/page.tsx : HerboristeDashboard = même layout que AdminDashboard (sidebar, stats, consultations récentes, quick actions, catalogue) SANS "Utilisateurs"
+• dashboard/page.tsx : Sidebar refactorisée — prop role ('admin'|'herboriste'|'user') au lieu de isAdmin booléen → badge correct par rôle
+• dashboard/page.tsx : fetch herboriste = stats (pendingCons/totalCons filtrés par herboriste_id, plants, glossary) + recentCons + plants
+• admin/utilisateurs/page.tsx : section "Demandes en attente" (herboriste_applications status=en_attente) avec boutons Approuver/Rejeter
+• admin/utilisateurs/HerboristeApplicationRow.tsx : client component approve/reject avec feedback inline
+• actions.ts : approveHerboristeApplication force role='herboriste' + display_name + approved=true (trigger live ne lit pas user_metadata)
+• actions.ts : submitConsultation sauvegarde herboriste_id
+• consultation/page.tsx : 2 étapes — sélection herboriste → formulaire
+• DB live : herboriste_applications créée + 4 policies RLS ; consultations_herboriste SELECT+UPDATE policies ; profiles.approved ajoutée ; consultations.herboriste_id ajoutée
+• Fix live : profil herbo@terrabio.cm corrigé (role=herboriste, display_name=herbo1)
 
-Travaux effectués dans cette session :
-• Dashboard admin redesigné : no-scroll (height:100vh), sidebar fixe, stats compactes
-• Admin layout partagé : src/app/admin/layout.tsx + src/components/AdminSidebar.tsx
-  → toutes les pages /admin/* héritent automatiquement de la sidebar (auth admin vérifiée)
-• Page /admin/plantes redessinée : tableau pro + stats Total/Publiées/Brouillons
-• Pages preview admin : /admin/app/catalogue|symptomes|carte|glossaire|conseils
-  → l'admin voit les pages utilisateur avec sa sidebar admin maintenue
-• 8 nouvelles plantes insérées via API Supabase (OCR du livre Beauvillard 1912) :
-  Menthe poivrée, Camomille, Thym commun, Romarin, Ortie dioïque, Sauge, Pissenlit, Mélisse
-• Navigation fluide : tous les <a href> internes → <Link> Next.js (plus de rechargement page)
-• Logo TerraBio (public/logo.png) intégré : Navbar · AdminSidebar · dashboard sidebar ·
-  topbar mobile · pages auth/login et auth/register
+[ENTRÉE 2 — 2026-06-26]
+✅ Consultation personnalisée — sélection herboriste + redirections rôle :
+• DB : profiles.approved, consultations.herboriste_id, policy profiles_read_herboristes
+• login/callback/register/proxy : redirect selon role (user→/plantes, admin/herboriste→/dashboard)
+• Navbar : onglet actif coloré (pill verte)
+• Page d'accueil bloquée aux utilisateurs authentifiés
 
-[ENTRÉE 2 — 2026-06-17] RESTE À FAIRE (par priorité soutenance)
-1. PRIORITÉ HAUTE — Réponse admin aux consultations :
-   /admin/consultations/[id]/page.tsx existe et est fonctionnelle (formulaire réponse OK)
-   → Vérifier que respondConsultation() (lib/actions.ts) fonctionne bien en prod
-2. PRIORITÉ HAUTE — Reset/Update password :
-   /auth/reset-password et /auth/update-password → pages existent, logique Supabase à brancher
-3. PRIORITÉ MOYENNE — Upload images plantes :
+[ENTRÉE 3 — RESTE À FAIRE]
+1. PRIORITÉ MOYENNE — Upload images plantes :
    image_url = NULL pour toutes les 18 plantes → configurer Supabase Storage bucket "plants"
-4. PRIORITÉ MOYENNE — Gestion rôles dans /admin/utilisateurs :
-   Tableau users affiché (service_role), mais modifier le rôle (user→admin) non implémenté
-5. PRIORITÉ BASSE — Tests : 0% couverture (Vitest/Playwright non configurés)
+   + champ upload dans /admin/plantes/PlantForm.tsx
+2. PRIORITÉ BASSE — Tests : 0% couverture (Vitest/Playwright non configurés)
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

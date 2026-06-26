@@ -30,7 +30,8 @@ export default function Navbar() {
     router.refresh()
   }
 
-  const navLinks = [
+  /* Navigation selon l'état d'authentification */
+  const authNavLinks = [
     {label:'Plantes',   href:'/plantes'},
     {label:'Symptômes', href:'/symptomes'},
     {label:'Conseils',  href:'/conseils'},
@@ -53,18 +54,36 @@ export default function Navbar() {
           </div>
         </Link>
 
-        {/* Desktop — liens navigation (masqué sur mobile via CSS) */}
+        {/* Desktop — liens navigation */}
         <div className="tb-nav-links">
-          {navLinks.map(({label,href})=>(
-            <Link key={label} href={href} style={{fontSize:14,fontWeight:500,color:isActive(href)?C.primaryDark:'#3D3D3D',textDecoration:'none',borderBottom:isActive(href)?`2px solid ${C.primary}`:'2px solid transparent',paddingBottom:2,whiteSpace:'nowrap'}}>
-              {label}
-            </Link>
-          ))}
+          {user ? (
+            /* Utilisateur connecté → liens complets */
+            authNavLinks.map(({label,href})=>(
+              <Link key={label} href={href} style={{
+                fontSize:14,
+                fontWeight: isActive(href) ? 700 : 500,
+                color: isActive(href) ? C.primaryDark : '#555',
+                textDecoration:'none',
+                background: isActive(href) ? C.primaryLight : 'transparent',
+                padding:'6px 13px',
+                borderRadius:10,
+                whiteSpace:'nowrap',
+                transition:'background .15s,color .15s',
+              }}>
+                {label}
+              </Link>
+            ))
+          ) : (
+            /* Visiteur → uniquement "À propos" */
+            <a href="#a-propos" style={{fontSize:14,fontWeight:500,color:'#555',textDecoration:'none',padding:'6px 13px',whiteSpace:'nowrap'}}>
+              À propos
+            </a>
+          )}
         </div>
 
-        {/* Desktop — auth (masqué sur mobile via CSS) */}
+        {/* Desktop — auth */}
         <div className="tb-nav-auth">
-          {user?(
+          {user ? (
             <>
               <Link href="/dashboard" style={{display:'flex',alignItems:'center',gap:6,height:36,padding:'0 14px',borderRadius:10,background:isActive('/dashboard')?C.primaryLight:'transparent',color:isActive('/dashboard')?C.primaryDark:'#3D3D3D',fontSize:13,fontWeight:500,textDecoration:'none',whiteSpace:'nowrap'}}>
                 <LayoutDashboard style={{width:14,height:14}}/> Tableau de bord
@@ -73,7 +92,7 @@ export default function Navbar() {
                 <LogOut style={{width:13,height:13}}/> Déconnexion
               </button>
             </>
-          ):(
+          ) : (
             <>
               <Link href="/auth/login" style={{height:36,padding:'0 14px',borderRadius:10,border:`1.5px solid ${C.border}`,color:'#333',fontSize:13,fontWeight:500,textDecoration:'none',display:'inline-flex',alignItems:'center',whiteSpace:'nowrap'}}>
                 Connexion
@@ -85,7 +104,7 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile — hamburger (visible uniquement sur mobile via CSS) */}
+        {/* Mobile — hamburger */}
         <button
           className="tb-nav-burger"
           onClick={()=>setMenuOpen(!menuOpen)}
@@ -96,7 +115,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile — overlay pour fermer */}
+      {/* Mobile — overlay */}
       {menuOpen&&(
         <div onClick={()=>setMenuOpen(false)} style={{position:'fixed',inset:0,zIndex:98,background:'transparent'}}/>
       )}
@@ -114,18 +133,26 @@ export default function Navbar() {
       }}>
         <div style={{padding:'12px 20px 20px',display:'flex',flexDirection:'column',gap:2}}>
 
-          {/* Liens navigation */}
-          {navLinks.map(({label,href})=>(
-            <Link key={label} href={href} onClick={()=>setMenuOpen(false)}
-              style={{height:46,display:'flex',alignItems:'center',padding:'0 12px',borderRadius:10,fontSize:15,fontWeight:500,color:isActive(href)?C.primaryDark:'#333',background:isActive(href)?C.primaryLight:'transparent',textDecoration:'none'}}>
-              {label}
-            </Link>
-          ))}
+          {user ? (
+            /* Utilisateur connecté : tous les liens */
+            authNavLinks.map(({label,href})=>(
+              <Link key={label} href={href} onClick={()=>setMenuOpen(false)}
+                style={{height:46,display:'flex',alignItems:'center',padding:'0 12px',borderRadius:10,fontSize:15,fontWeight:500,color:isActive(href)?C.primaryDark:'#333',background:isActive(href)?C.primaryLight:'transparent',textDecoration:'none'}}>
+                {label}
+              </Link>
+            ))
+          ) : (
+            /* Visiteur : uniquement À propos */
+            <a href="#a-propos" onClick={()=>setMenuOpen(false)}
+              style={{height:46,display:'flex',alignItems:'center',padding:'0 12px',borderRadius:10,fontSize:15,fontWeight:500,color:'#333',textDecoration:'none'}}>
+              À propos
+            </a>
+          )}
 
           <div style={{height:1,background:C.border,margin:'8px 0'}}/>
 
           {/* Auth */}
-          {user?(
+          {user ? (
             <>
               <Link href="/dashboard" onClick={()=>setMenuOpen(false)}
                 style={{height:46,display:'flex',alignItems:'center',gap:10,padding:'0 12px',borderRadius:10,fontSize:15,fontWeight:500,color:isActive('/dashboard')?C.primaryDark:'#333',background:isActive('/dashboard')?C.primaryLight:'transparent',textDecoration:'none'}}>
@@ -136,7 +163,7 @@ export default function Navbar() {
                 <LogOut style={{width:15,height:15}}/> Se déconnecter
               </button>
             </>
-          ):(
+          ) : (
             <div style={{display:'flex',gap:10,marginTop:4}}>
               <Link href="/auth/login" onClick={()=>setMenuOpen(false)}
                 style={{flex:1,height:46,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:12,border:`1.5px solid ${C.border}`,fontSize:15,fontWeight:600,color:'#333',textDecoration:'none'}}>

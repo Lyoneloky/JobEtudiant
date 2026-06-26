@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import PlantCard from '@/components/PlantCard'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import Link from 'next/link'
 import { Leaf, Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { Plant, Category } from '@/lib/types'
 
@@ -90,9 +91,9 @@ export default async function PlantesPage({ searchParams }: { searchParams: Prom
             Filtrer
           </button>
           {(params.q || params.categorie) && (
-            <a href="/plantes" style={{ height:48, padding:'0 18px', borderRadius:14, border:'1.5px solid #E8EDE4', color:'#616161', fontSize:14, display:'inline-flex', alignItems:'center', textDecoration:'none', background:'#FFF' }}>
+            <Link href="/plantes" style={{ height:48, padding:'0 18px', borderRadius:14, border:'1.5px solid #E8EDE4', color:'#616161', fontSize:14, display:'inline-flex', alignItems:'center', textDecoration:'none', background:'#FFF' }}>
               Réinitialiser
-            </a>
+            </Link>
           )}
         </form>
 
@@ -107,9 +108,9 @@ export default async function PlantesPage({ searchParams }: { searchParams: Prom
             {totalPages > 1 && (
               <div style={{ display:'flex', justifyContent:'center', alignItems:'center', gap:8, marginTop:40 }}>
                 {page > 1 ? (
-                  <a href={pageUrl(page - 1)} style={{ height:44, padding:'0 18px', borderRadius:12, border:'1.5px solid #E8EDE4', color:'#333', fontSize:14, fontWeight:500, display:'inline-flex', alignItems:'center', gap:6, textDecoration:'none', background:'#FFF' }}>
+                  <Link href={pageUrl(page - 1)} style={{ height:44, padding:'0 18px', borderRadius:12, border:'1.5px solid #E8EDE4', color:'#333', fontSize:14, fontWeight:500, display:'inline-flex', alignItems:'center', gap:6, textDecoration:'none', background:'#FFF' }}>
                     <ChevronLeft style={{ width:16, height:16 }}/> Précédent
-                  </a>
+                  </Link>
                 ) : (
                   <span style={{ height:44, padding:'0 18px', borderRadius:12, border:'1.5px solid #E8EDE4', color:'#C0C8BE', fontSize:14, display:'inline-flex', alignItems:'center', gap:6, background:'#FAFAFA' }}>
                     <ChevronLeft style={{ width:16, height:16 }}/> Précédent
@@ -127,17 +128,17 @@ export default async function PlantesPage({ searchParams }: { searchParams: Prom
                     .map((p, i) => p === '...' ? (
                       <span key={`dots-${i}`} style={{ height:44, width:44, display:'inline-flex', alignItems:'center', justifyContent:'center', fontSize:14, color:'#9AA49A' }}>…</span>
                     ) : (
-                      <a key={p} href={pageUrl(p as number)} style={{ height:44, width:44, borderRadius:12, border:`1.5px solid ${p === page ? '#166534' : '#E8EDE4'}`, background:p === page ? '#166534' : '#FFF', color:p === page ? '#FFF' : '#333', fontSize:14, fontWeight:p === page ? 700 : 500, display:'inline-flex', alignItems:'center', justifyContent:'center', textDecoration:'none' }}>
+                      <Link key={p} href={pageUrl(p as number)} style={{ height:44, width:44, borderRadius:12, border:`1.5px solid ${p === page ? '#166534' : '#E8EDE4'}`, background:p === page ? '#166534' : '#FFF', color:p === page ? '#FFF' : '#333', fontSize:14, fontWeight:p === page ? 700 : 500, display:'inline-flex', alignItems:'center', justifyContent:'center', textDecoration:'none' }}>
                         {p}
-                      </a>
+                      </Link>
                     ))
                   }
                 </div>
 
                 {page < totalPages ? (
-                  <a href={pageUrl(page + 1)} style={{ height:44, padding:'0 18px', borderRadius:12, border:'1.5px solid #E8EDE4', color:'#333', fontSize:14, fontWeight:500, display:'inline-flex', alignItems:'center', gap:6, textDecoration:'none', background:'#FFF' }}>
+                  <Link href={pageUrl(page + 1)} style={{ height:44, padding:'0 18px', borderRadius:12, border:'1.5px solid #E8EDE4', color:'#333', fontSize:14, fontWeight:500, display:'inline-flex', alignItems:'center', gap:6, textDecoration:'none', background:'#FFF' }}>
                     Suivant <ChevronRight style={{ width:16, height:16 }}/>
-                  </a>
+                  </Link>
                 ) : (
                   <span style={{ height:44, padding:'0 18px', borderRadius:12, border:'1.5px solid #E8EDE4', color:'#C0C8BE', fontSize:14, display:'inline-flex', alignItems:'center', gap:6, background:'#FAFAFA' }}>
                     Suivant <ChevronRight style={{ width:16, height:16 }}/>
@@ -153,9 +154,9 @@ export default async function PlantesPage({ searchParams }: { searchParams: Prom
             </div>
             <h2 style={{ fontSize:22, fontWeight:700, color:'#555', marginBottom:10 }}>Aucun résultat</h2>
             <p style={{ fontSize:15, color:'#888' }}>Essayez d&apos;autres mots-clés ou supprimez les filtres.</p>
-            <a href="/plantes" style={{ display:'inline-flex', marginTop:20, height:44, padding:'0 22px', borderRadius:12, background:'#166534', color:'#FFF', fontSize:14, fontWeight:600, textDecoration:'none', alignItems:'center' }}>
+            <Link href="/plantes" style={{ display:'inline-flex', marginTop:20, height:44, padding:'0 22px', borderRadius:12, background:'#166534', color:'#FFF', fontSize:14, fontWeight:600, textDecoration:'none', alignItems:'center' }}>
               Réinitialiser les filtres
-            </a>
+            </Link>
           </div>
         )}
       </div>

@@ -27,29 +27,42 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   const pathname = request.nextUrl.pathname
 
-  const protectedRoutes = ['/dashboard', '/admin', '/profil']
-  const authRoutes      = ['/auth/login', '/auth/register']
+  // Routes publiques : page d'accueil et authentification uniquement
+  const isPublic = pathname === '/' || pathname.startsWith('/auth/')
+  const isAdminRoute = pathname.startsWith('/admin')
 
-  // Redirige vers login si non connecté sur une route protégée
-  if (!user && protectedRoutes.some(r => pathname.startsWith(r))) {
+  // Visiteur non connecté → redirige vers login pour toute route non-publique
+  if (!user && !isPublic) {
     const url = new URL('/auth/login', request.url)
     url.searchParams.set('redirect', pathname)
     return NextResponse.redirect(url)
   }
 
-  // Redirige vers dashboard si déjà connecté sur les pages auth
-  if (user && authRoutes.some(r => pathname.startsWith(r))) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
-
-  // Vérifie le rôle admin pour les routes /admin/*
-  if (user && pathname.startsWith('/admin')) {
-    const { data: profile } = await supabase
+  // Récupérer le profil si connecté
+  let profile = null
+  if (user) {
+    const { data } = await supabase
       .from('profiles')
-      .select('role')
+      .select('role, approved')
       .eq('id', user.id)
       .single()
+    profile = data
+  }
 
+  // Herboriste non approuvé → page d'attente
+  if (user && profile?.role === 'herboriste' && !profile.approved && !isPublic) {
+    return NextResponse.redirect(new URL('/auth/pending', request.url))
+  }
+
+  // Utilisateur connecté sur une page auth ou l'accueil → redirige selon son rôle
+  const isAuthOrHome = pathname.startsWith('/auth/') || pathname === '/'
+  if (user && isAuthOrHome && pathname !== '/auth/pending') {
+    const dest = (profile?.role === 'admin' || profile?.role === 'herboriste') ? '/dashboard' : '/plantes'
+    return NextResponse.redirect(new URL(dest, request.url))
+  }
+
+  // Accès /admin réservé aux admins
+  if (user && isAdminRoute) {
     if (!profile || profile.role !== 'admin') {
       return NextResponse.redirect(new URL('/dashboard', request.url))
     }

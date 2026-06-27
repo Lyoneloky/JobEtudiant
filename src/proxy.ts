@@ -61,9 +61,9 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(dest, request.url))
   }
 
-  // Accès /admin réservé aux admins
+  // Accès /admin réservé aux admins et herboristes
   if (user && isAdminRoute) {
-    if (!profile || profile.role !== 'admin') {
+    if (!profile || (profile.role !== 'admin' && profile.role !== 'herboriste')) {
       return NextResponse.redirect(new URL('/dashboard', request.url))
     }
   }

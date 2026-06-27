@@ -4,13 +4,10 @@
 
 **Nom de l'application :** TerraBio  
 **Sujet :** MISE EN PLACE D'UNE PLATEFORME INTELLIGENTE D'AIDE À L'UTILISATION RESPONSABLE DES PLANTES MÉDICINALES DU CAMEROUN  
-**Type :** Projet de stage académique — DTS Génie Logiciel  
-**Stagiaire :** NOAH MEKONGO Barnabé Lionel (Niveau II / L2A)  
+**Type :** Projet personnalisé  
+**Auteur :** NOAH MEKONGO Barnabé Lionel (Niveau III / GL3C)  
 **Institution :** Institut Africain d'Informatique (IAI-Cameroun), Yaoundé  
-**Entreprise d'accueil :** Digital Generation Company SARL, Yaoundé  
-**Encadrante académique :** Mme NDJATHE Germaine  
-**Encadrante professionnelle :** Mme DZEUFACK Theresa  
-**Période :** Juillet–Septembre 2025 — Année académique 2024-2025
+**Période :** Année académique 2024-2025
 
 **Différence vs rapport :** Le rapport préconisait React.js + Node.js + Express + PostgreSQL. Nous avons remplacé le backend par **Supabase** (PostgreSQL managé + Auth + RLS + API REST auto-générée), en gardant le même schéma relationnel.
 
@@ -317,7 +314,7 @@ npm run build
 
 | Fichier | Emplacement | Description |
 |---|---|---|
-| `PAGE DE GARDE.docx` | `Soutenance_personnelle/` | Rapport de stage complet (source de vérité fonctionnelle) |
+| `PAGE DE GARDE.docx` | `Soutenance_personnelle/` | Rapport de projet complet (source de vérité fonctionnelle) |
 | `Guide_Supabase_TerraBio.docx` | `Soutenance_personnelle/` | Guide d'implémentation Supabase (9 sections, généré en session) |
 | Images de référence UI | `Soutenance_personnelle/` | `b74ec595-...png` (landing), `7191e598-...png` (dashboard) |
 

@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import PlantCard from '@/components/PlantCard'
 import { Leaf, Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { Plant, Category } from '@/lib/types'
+import Link from 'next/link'
 
 const PAGE_SIZE = 9
 interface SearchParams { q?: string; categorie?: string; page?: string }
@@ -82,9 +83,9 @@ export default async function AdminCataloguePage({ searchParams }: { searchParam
           Filtrer
         </button>
         {(params.q || params.categorie) && (
-          <a href={BASE} style={{ height: 44, padding: '0 14px', borderRadius: 12, border: '1.5px solid #E8EDE4', color: '#616161', fontSize: 13, display: 'inline-flex', alignItems: 'center', textDecoration: 'none', background: '#FFF' }}>
+          <Link href={BASE} style={{ height: 44, padding: '0 14px', borderRadius: 12, border: '1.5px solid #E8EDE4', color: '#616161', fontSize: 13, display: 'inline-flex', alignItems: 'center', textDecoration: 'none', background: '#FFF' }}>
             Réinitialiser
-          </a>
+          </Link>
         )}
       </form>
 
@@ -99,9 +100,9 @@ export default async function AdminCataloguePage({ searchParams }: { searchParam
           {totalPages > 1 && (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 32 }}>
               {page > 1 ? (
-                <a href={pageUrl(page - 1)} style={{ height: 40, padding: '0 16px', borderRadius: 10, border: '1.5px solid #E8EDE4', color: '#333', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none', background: '#FFF' }}>
+                <Link href={pageUrl(page - 1)} style={{ height: 40, padding: '0 16px', borderRadius: 10, border: '1.5px solid #E8EDE4', color: '#333', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none', background: '#FFF' }}>
                   <ChevronLeft style={{ width: 15, height: 15 }} /> Précédent
-                </a>
+                </Link>
               ) : (
                 <span style={{ height: 40, padding: '0 16px', borderRadius: 10, border: '1.5px solid #E8EDE4', color: '#C0C8BE', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 6, background: '#FAFAFA' }}>
                   <ChevronLeft style={{ width: 15, height: 15 }} /> Précédent
@@ -114,13 +115,13 @@ export default async function AdminCataloguePage({ searchParams }: { searchParam
                   .map((p, i) => p === '...' ? (
                     <span key={`dots-${i}`} style={{ height: 40, width: 40, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, color: '#9AA49A' }}>…</span>
                   ) : (
-                    <a key={p} href={pageUrl(p as number)} style={{ height: 40, width: 40, borderRadius: 10, border: `1.5px solid ${p === page ? '#166534' : '#E8EDE4'}`, background: p === page ? '#166534' : '#FFF', color: p === page ? '#FFF' : '#333', fontSize: 13, fontWeight: p === page ? 700 : 500, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>{p}</a>
+                    <Link key={p} href={pageUrl(p as number)} style={{ height: 40, width: 40, borderRadius: 10, border: `1.5px solid ${p === page ? '#166534' : '#E8EDE4'}`, background: p === page ? '#166534' : '#FFF', color: p === page ? '#FFF' : '#333', fontSize: 13, fontWeight: p === page ? 700 : 500, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}>{p}</Link>
                   ))}
               </div>
               {page < totalPages ? (
-                <a href={pageUrl(page + 1)} style={{ height: 40, padding: '0 16px', borderRadius: 10, border: '1.5px solid #E8EDE4', color: '#333', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none', background: '#FFF' }}>
+                <Link href={pageUrl(page + 1)} style={{ height: 40, padding: '0 16px', borderRadius: 10, border: '1.5px solid #E8EDE4', color: '#333', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none', background: '#FFF' }}>
                   Suivant <ChevronRight style={{ width: 15, height: 15 }} />
-                </a>
+                </Link>
               ) : (
                 <span style={{ height: 40, padding: '0 16px', borderRadius: 10, border: '1.5px solid #E8EDE4', color: '#C0C8BE', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 6, background: '#FAFAFA' }}>
                   Suivant <ChevronRight style={{ width: 15, height: 15 }} />
@@ -136,9 +137,9 @@ export default async function AdminCataloguePage({ searchParams }: { searchParam
           </div>
           <h2 style={{ fontSize: 18, fontWeight: 700, color: '#555', marginBottom: 8 }}>Aucun résultat</h2>
           <p style={{ fontSize: 14, color: '#888', marginBottom: 16 }}>Essayez d&apos;autres mots-clés ou supprimez les filtres.</p>
-          <a href={BASE} style={{ display: 'inline-flex', height: 40, padding: '0 20px', borderRadius: 10, background: '#166534', color: '#FFF', fontSize: 13, fontWeight: 600, textDecoration: 'none', alignItems: 'center' }}>
+          <Link href={BASE} style={{ display: 'inline-flex', height: 40, padding: '0 20px', borderRadius: 10, background: '#166534', color: '#FFF', fontSize: 13, fontWeight: 600, textDecoration: 'none', alignItems: 'center' }}>
             Réinitialiser les filtres
-          </a>
+          </Link>
         </div>
       )}
     </div>

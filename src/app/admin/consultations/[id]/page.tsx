@@ -44,22 +44,25 @@ export default function AdminConsultationDetailPage() {
   const [errorMsg, setErrorMsg]         = useState('')
   const [loading, setLoading]           = useState(true)
   const [isPending, startTransition]    = useTransition()
+  const [isHerboriste, setIsHerboriste] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) { router.push('/auth/login'); return }
 
-      const [{ data: cons }, { data: pl }] = await Promise.all([
+      const [{ data: cons }, { data: pl }, { data: prof }] = await Promise.all([
         supabase.from('consultations').select('*, profiles(display_name)').eq('id', id).single(),
         supabase.from('plants').select('id, name').eq('is_published', true).order('name'),
+        supabase.from('profiles').select('role').eq('id', data.user.id).single(),
       ])
 
-      if (!cons) { router.push('/admin/consultations'); return }
+      if (!cons) { router.push('/dashboard'); return }
       setConsultation(cons as unknown as Consultation)
       setResponse(cons.admin_response ?? '')
       setPlantId(cons.plant_recommended_id ?? '')
       setPlants(pl ?? [])
+      setIsHerboriste(prof?.role === 'herboriste')
       setLoading(false)
     })
   }, [id, router])
@@ -73,7 +76,7 @@ export default function AdminConsultationDetailPage() {
         setErrorMsg(result.error)
       } else {
         setSaved(true)
-        setTimeout(() => { setSaved(false); router.push('/admin/consultations') }, 1500)
+        setTimeout(() => { setSaved(false); router.push(isHerboriste ? '/dashboard' : '/admin/consultations') }, 1500)
       }
     })
   }
@@ -94,8 +97,8 @@ export default function AdminConsultationDetailPage() {
   return (
     <div style={{ maxWidth: 800, padding: '8px 0 60px' }}>
 
-        <Link href="/admin/consultations" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 14, color: C.text, textDecoration: 'none', marginBottom: 28 }}>
-          <ArrowLeft style={{ width: 16, height: 16 }} /> Retour aux consultations
+        <Link href={isHerboriste ? '/dashboard' : '/admin/consultations'} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 14, color: C.text, textDecoration: 'none', marginBottom: 28 }}>
+          <ArrowLeft style={{ width: 16, height: 16 }} /> {isHerboriste ? 'Retour au tableau de bord' : 'Retour aux consultations'}
         </Link>
 
         {/* En-tête */}

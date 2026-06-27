@@ -3,6 +3,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { AlertTriangle } from 'lucide-react'
 import ConseilsClient, { type TipItem, type SideEffectReport } from './ConseilsClient'
+import ChatBot from '@/components/ChatBot'
 
 const C = { primaryDark:'#166534', text:'#616161', bg:'#F8FAF5', border:'#E8EDE4' }
 
@@ -94,6 +95,7 @@ export default async function ConseilsPage() {
         </div>
       </main>
       <Footer />
+      <ChatBot />
     </div>
   )
 }

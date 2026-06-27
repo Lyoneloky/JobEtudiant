@@ -37,7 +37,7 @@ export default async function AdminConseilsPage() {
         </p>
       </div>
 
-      <ConseilsClient tips={tips} />
+      <ConseilsClient tips={tips} currentUserId={null} currentUserRole={null} />
 
       {/* Avertissement médical */}
       <div style={{ marginTop: 40, background: '#FFF8E8', border: '1px solid #FDE68A', borderRadius: 16, padding: '18px 20px', display: 'flex', gap: 12 }}>

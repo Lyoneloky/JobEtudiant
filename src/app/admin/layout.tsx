@@ -13,7 +13,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     .eq('id', user.id)
     .single()
 
-  if (profile?.role !== 'admin') redirect('/dashboard')
+  if (profile?.role !== 'admin' && profile?.role !== 'herboriste') redirect('/dashboard')
 
   return (
     <div className="tb-dashboard" style={{ fontFamily: '"Inter", Arial, sans-serif', background: '#F8FAF5', minHeight: '100vh' }}>
